@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя ОС</title>
+    <style>
+        /* Общие стили */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f1f1f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            color: #333;
+        }
+
+        /* Рабочий стол */
+        #desktop {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 40px;
+            justify-items: center;
+            align-items: start;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .icon img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+
+        /* Модальные окна (приложения) */
+        .app-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: none;
+            flex-direction: column;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .app-header {
+            background: #0078d7;
+            color: white;
+            padding: 14px;
+            text-align: center;
+            font-size: 18px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-content {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            background: #f9f9f9;
+        }
+
+        /* Панель управления (прикреплена снизу) */
+        #control-panel {
+            height: 60px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.2);
+            z-index: 200;
+        }
+
+        .control-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .control-btn img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .control-btn span {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* Всплывающие кнопки */
+        .app-modal.active {
+            display: flex;
+        }
+
+        /* Тень при наведении */
+        .icon:active, .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Стиль для отображения страниц */
+        #telegram-frame {
+            width: 100%;
+            height: calc(100% - 60px); /* Отступ для панели управления */
+            border: none;
+            border-radius: 10px;
+        }
+
+        /* Стиль для отображения страниц */
+        #telegram-content {
+            width: 100%;
+            height: calc(100% - 50px); /* Чтобы учитывать верхний блок */
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Рабочий стол -->
+    <div id="desktop">
+        <div class="icon" data-app="telegram">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Telegram">
+            <span>Телеграм</span>
+        </div>
+        <div class="icon" data-app="gallery">
+            <img src="https://cdn-icons-png.flaticon.com/512/3658/3658959.png" alt="Gallery">
+            <span>Галерея</span>
+        </div>
+        <div class="icon" data-app="notes">
+            <img src="https://cdn-icons-png.flaticon.com/512/929/929430.png" alt="Notes">
+            <span>Заметки</span>
+        </div>
+        <div class="icon" data-app="camera">
+            <img src="https://cdn-icons-png.flaticon.com/512/1160/1160487.png" alt="Camera">
+            <span>Камера</span>
+        </div>
+    </div>
+
+    <!-- Приложение: Telegram -->
+    <div id="telegram" class="app-modal">
+        <div class="app-header">Telegram</div>
+        <div class="app-content">
+            <div id="telegram-content">
+                <iframe id="telegram-frame" src="https://web.telegram.org/" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Приложение: Галерея -->
+    <div id="gallery" class="app-modal">
+        <div class="app-header">Галерея</div>
+        <div class="app-content">
+            <img src="https://source.unsplash.com/random/400x300" style="width: 100%; margin-bottom: 10px;">
+            <img src="https://source.unsplash.com/random/400x300?sig=1" style="width: 100%; margin-bottom: 10px;">
+        </div>
+    </div>
+
+    <!-- Приложение: Заметки -->
+    <div id="notes" class="app-modal">
+        <div class="app-header">Заметки</div>
+        <div class="app-content">
+            <textarea id="notes-area" style="width: 100%; height: calc(100% - 20px); border-radius: 15px; padding: 10px;"></textarea>
+        </div>
+    </div>
+
+    <!-- Приложение: Камера -->
+    <div id="camera" class="app-modal">
+        <div class="app-header">Камера</div>
+        <div class="app-content">
+            <video id="camera-video" autoplay></video>
+        </div>
+    </div>
+
+    <!-- Панель управления -->
+    <div id="control-panel">
+        <div class="control-btn" id="btn-back">
+            <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" alt="Back">
+            <span>Назад</span>
+        </div>
+        <div class="control-btn" id="btn-home">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Home">
+            <span>Домой</span>
+        </div>
+        <div class="control-btn" id="btn-fullscreen">
+            <img src="https://cdn-icons-png.flaticon.com/512/3062/3062672.png" alt="Fullscreen">
+            <span>Экран</span>
+        </div>
+    </div>
+
+    <script>
+        // Управление окнами приложений
+        const apps = document.querySelectorAll('.app-modal');
+        const icons = document.querySelectorAll('.icon');
+        const desktop = document.getElementById('desktop');
+
+        icons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                const appId = icon.dataset.app;
+                apps.forEach(app => app.classList.remove('active'));
+                document.getElementById(appId).classList.add('active');
+            });
+        });
+
+        document.getElementById('btn-home').addEventListener('click', () => {
+            apps.forEach(app => app.classList.remove('active'));
+        });
+
+        document.getElementById('btn-back').addEventListener('click', () => {
+            const telegramContent = document.getElementById('telegram-content');
+            if (telegramContent && telegramContent.innerHTML.includes('window.history.back')) {
+                window.history.back();
+            }
+        });
+
+        // Функция для полноэкранного режима
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Обработчик для кнопки перехода в полный экран
+        document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+    </script>
+</body>
+</html>
